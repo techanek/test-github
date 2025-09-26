@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geoip-sidecar-app
+  labels:
+    app: geoip-sidecar-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geoip-sidecar-app
+  template:
+    metadata:
+      labels:
+        app: geoip-sidecar-app
+    spec:
+      containers:
+        - name: geoip-sidecar-app
+          image: geoip-sidecar-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: main
+              containerPort: 8080
+            - name: sidecar
+              containerPort: 9000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: sidecar
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: sidecar
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

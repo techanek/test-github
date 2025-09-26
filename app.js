@@ -8,7 +8,7 @@ const APP_PORT = 8080;
 
 app.use((req, res) => {
     // Get real client IP
-    const ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
+    const ip = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     // GeoIP lookup
     const geo = geoip.lookup(ip) || {};
